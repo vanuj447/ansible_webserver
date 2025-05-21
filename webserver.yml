@@ -1,0 +1,26 @@
+---
+- name: Setup Nginx Web Server
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Nginx (Ubuntu)
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Start and Enable Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Deploy custom index.html
+      copy:
+        src: files/index.html
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'

@@ -1,0 +1,14 @@
+---
+- name: Create multiple files on remote host
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Create multiple files
+      file:
+        path: "/home/ubuntu/{{ item }}"
+        state: touch
+      loop:
+        - file1.txt
+        - file2.txt
+        - file3.txt
