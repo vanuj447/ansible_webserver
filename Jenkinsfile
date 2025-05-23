@@ -22,9 +22,9 @@ pipeline {
             }
         }
 
-        stage('Third Stage') {
+        stage('Download Ansible Code') {
             steps {
-                echo "Third stage"
+                git branch: 'main', credentialsId: 'git_key', url: 'git@github.com:vanuj447/ansible_webserver.git'
             }
         }
     }
