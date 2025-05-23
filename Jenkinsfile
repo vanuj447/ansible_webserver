@@ -21,7 +21,7 @@ pipeline {
         }
     }
 }
-
+    }
 
         stage('Third Stage') {
             steps {
