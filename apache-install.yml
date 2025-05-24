@@ -19,6 +19,6 @@
 
     - name: Create index.html with Hello World
       copy:
-        content: "<html><body><h1>Hello World</h1></body></html>"
+        content: "<html><body><h1>Hello World the lab is done</h1></body></html>"
         dest: /var/www/html/index.html
         mode: '0644' 
