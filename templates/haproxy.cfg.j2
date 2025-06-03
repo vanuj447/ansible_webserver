@@ -1,0 +1,9 @@
+frontend http-in
+  default_backend container_backend
+  bind *:8080
+backend container_backend
+  balance roundrobin
+
+{% for i in range(1,http_container_count+1) %}
+  server webserver{{ i }} localhost:808{{ i }} check
+{% endfor %}
