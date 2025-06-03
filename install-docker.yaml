@@ -1,0 +1,77 @@
+---
+- hosts: dockerhost
+  become: true  
+  vars:
+    http_container_count: 4
+    http_container_name: webserver
+    http_container_image: httpd
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+   
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce 
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Install Docker Python module using APT
+      apt:
+        name: python3-docker
+        state: present
+
+    - name: Add Ubuntu user to Docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Create webcontainer directory
+      file:
+        path: /home/ubuntu/webcontainer
+        state: directory
+
+    - name: Create webcontent
+      template:
+        src: index.html.j2
+        dest: /home/ubuntu/webcontainer/index.html
+        owner: ubuntu
+        group: docker
+        mode: 0774 
+
+     - name: Create webserver containers
+       community.docker.docker_container:
+           name: "{{ http_container_name }}{{ item }}"
+           image: "{{ http_container_image }}"
+           state: started =           
+           volumes:
+            - /home/ubuntu/webcontainer/:/usr/local/apache2/htdocs/
+            ports:
+            - "808{{ item }}:80"
+           with_sequence: count={{ http_container_count }}
