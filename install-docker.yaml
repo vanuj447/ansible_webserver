@@ -65,13 +65,13 @@
         group: docker
         mode: 0774 
 
-     - name: Create webserver containers
-       community.docker.docker_container:
-           name: "{{ http_container_name }}{{ item }}"
-           image: "{{ http_container_image }}"
-           state: started =           
-           volumes:
+    - name: Create webserver containers
+      community.docker.docker_container:
+          name: "{{ http_container_name }}{{ item }}"
+          image: "{{ http_container_image }}"
+          state: started =           
+          volumes:
             - /home/ubuntu/webcontainer/:/usr/local/apache2/htdocs/
-            ports:
-            - "808{{ item }}:80"
-           with_sequence: count={{ http_container_count }}
+           ports:
+           - "808{{ item }}:80"
+         with_sequence: count={{ http_container_count }}
