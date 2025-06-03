@@ -1,0 +1,22 @@
+---
+- name: Install and Configure HA Proxy
+  hosts: all
+  become: yes
+  become_user: root
+  vars:
+    backend_hosts: "{{ groups['webservers'] |
+        map('extract',hostvars) | list |
+        items2dict(key_name='ansible_host', value_name='ansible_host') |
+        dict2items(key_name='name', value_name='address')
+        }}"
+  tasks:
+    - name: Install HA proxy only on Loadbalancer servers
+      include_role:
+        name: geerlingguy.haproxy
+      vars:
+        haproxy_package: "haproxy"  # no version pinning to avoid 404
+        haproxy_backend_name: 'habackend'
+        haproxy_backend_mode: 'http'
+        haproxy_backend_balance_method: 'roundrobin'
+        haproxy_backend_servers: "{{ backend_hosts }}"
+      when: "'loadbalancer' in group_names"
